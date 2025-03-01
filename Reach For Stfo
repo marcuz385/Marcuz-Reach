@@ -1,0 +1,369 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+local Window = Rayfield:CreateWindow({
+   Name = "Marcuz reach",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Marcuz hub",
+   LoadingSubtitle = "by Marcuz",
+   Theme = "AmberGlow", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+ 
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+ 
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Marcuz"
+   },
+ 
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+ 
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+ 
+local MainTab = Window:CreateTab("Reach⚔️", nil) -- Title, Image
+local MainSection = MainTab:CreateSection("Main")
+ 
+Rayfield:Notify({
+   Title = "Thanks for executing the script",
+   Content = "Marcuz",
+   Duration = 5,
+   Image = nil,
+})
+ 
+local Button = MainTab:CreateButton({
+   Name = "Blatant Reach on",
+   Callback = function()
+        game.StarterGui:SetCore("SendNotification", {
+                 Title = "Reach on";
+                 Text = "by discord username: uzimarcuzz";
+                 Icon = "";
+                 Duration = 1;})
+ 
+_G.Reach = 99999999999
+_G.ReachOff = false -- Set this to true if you want to disable the reach lol
+ 
+game:GetService"RunService".Stepped:Connect(function()
+    if _G.ReachOff then return end
+    pcall(function()
+      Sword = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle
+        for i,v in pairs(game.Players:GetPlayers()) do 
+            if v ~= game.Players.LocalPlayer and v.Character:FindFirstChild("Left Arm") then
+             if (game.Players.LocalPlayer.Character.Torso.Position - v.Character.Torso.Position).Magnitude <= _G.Reach then
+                   v.Character['Left Leg']:BreakJoints()
+                   v.Character['Left Leg'].Transparency = 0
+                   v.Character['Left Leg'].CanCollide = false
+                   v.Character['Left Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Leg']:BreakJoints()
+                   v.Character['Right Leg'].Transparency = 0
+                   v.Character['Right Leg'].CanCollide = false
+                   v.Character['Right Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Left Arm']:BreakJoints()
+                   v.Character['Left Arm'].Transparency = 0
+                   v.Character['Left Arm'].CanCollide = false
+                   v.Character['Left Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Arm']:BreakJoints()
+                   v.Character['Right Arm'].Transparency = 0
+                   v.Character['Right Arm'].CanCollide = false
+                   v.Character['Right Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+               end
+           end
+       end
+    end)
+end)
+ 
+local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindHigher then
+                 _G.Reach = _G.Reach + 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "redefined";
+                 Text = "cbring increased to " .. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+ 
+ 
+     local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindLower then
+                 _G.Reach = _G.Reach - 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "sword/sahand";
+                 Text = "cbring decreased to ".. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+   end,
+})
+ 
+local Button = MainTab:CreateButton({
+   Name = "Blatant Reach off",
+   Callback = function()
+        game.StarterGui:SetCore("SendNotification", {
+                 Title = "Reach off";
+                 Text = "by discord username: uzimarcuzz";
+                 Icon = "";
+                 Duration = 1;})
+ 
+_G.Reach = 0
+_G.ReachOff = false -- Set this to true if you want to disable the reach lol
+ 
+game:GetService"RunService".Stepped:Connect(function()
+    if _G.ReachOff then return end
+    pcall(function()
+      Sword = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle
+        for i,v in pairs(game.Players:GetPlayers()) do 
+            if v ~= game.Players.LocalPlayer and v.Character:FindFirstChild("Left Arm") then
+             if (game.Players.LocalPlayer.Character.Torso.Position - v.Character.Torso.Position).Magnitude <= _G.Reach then
+                   v.Character['Left Leg']:BreakJoints()
+                   v.Character['Left Leg'].Transparency = 0
+                   v.Character['Left Leg'].CanCollide = false
+                   v.Character['Left Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Leg']:BreakJoints()
+                   v.Character['Right Leg'].Transparency = 0
+                   v.Character['Right Leg'].CanCollide = false
+                   v.Character['Right Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Left Arm']:BreakJoints()
+                   v.Character['Left Arm'].Transparency = 0
+                   v.Character['Left Arm'].CanCollide = false
+                   v.Character['Left Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Arm']:BreakJoints()
+                   v.Character['Right Arm'].Transparency = 0
+                   v.Character['Right Arm'].CanCollide = false
+                   v.Character['Right Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+               end
+           end
+       end
+    end)
+end)
+ 
+local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindHigher then
+                 _G.Reach = _G.Reach + 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "redefined";
+                 Text = "cbring increased to " .. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+ 
+ 
+     local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindLower then
+                 _G.Reach = _G.Reach - 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "sword/sahand";
+                 Text = "cbring decreased to ".. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+   end,
+})
+ 
+local Button = MainTab:CreateButton({
+   Name = "Legit Reach",
+   Callback = function()
+        game.StarterGui:SetCore("SendNotification", {
+                 Title = "Legit Reach on";
+                 Text = "by discord username: uzimarcuzz";
+                 Icon = "";
+                 Duration = 1;})
+ 
+_G.Reach = 4.5
+_G.ReachOff = false -- Set this to true if you want to disable the reach lol
+ 
+game:GetService"RunService".Stepped:Connect(function()
+    if _G.ReachOff then return end
+    pcall(function()
+      Sword = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle
+        for i,v in pairs(game.Players:GetPlayers()) do 
+            if v ~= game.Players.LocalPlayer and v.Character:FindFirstChild("Left Arm") then
+             if (game.Players.LocalPlayer.Character.Torso.Position - v.Character.Torso.Position).Magnitude <= _G.Reach then
+                   v.Character['Left Leg']:BreakJoints()
+                   v.Character['Left Leg'].Transparency = 0
+                   v.Character['Left Leg'].CanCollide = false
+                   v.Character['Left Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Leg']:BreakJoints()
+                   v.Character['Right Leg'].Transparency = 0
+                   v.Character['Right Leg'].CanCollide = false
+                   v.Character['Right Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Left Arm']:BreakJoints()
+                   v.Character['Left Arm'].Transparency = 0
+                   v.Character['Left Arm'].CanCollide = false
+                   v.Character['Left Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Arm']:BreakJoints()
+                   v.Character['Right Arm'].Transparency = 0
+                   v.Character['Right Arm'].CanCollide = false
+                   v.Character['Right Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+               end
+           end
+       end
+    end)
+end)
+ 
+local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindHigher then
+                 _G.Reach = _G.Reach + 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "redefined";
+                 Text = "cbring increased to " .. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+ 
+ 
+     local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindLower then
+                 _G.Reach = _G.Reach - 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "sword/sahand";
+                 Text = "cbring decreased to ".. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+   end,
+})
+ 
+local Button = MainTab:CreateButton({
+   Name = "Legit Reach off",
+   Callback = function()
+                game.StarterGui:SetCore("SendNotification", {
+                 Title = "Reach off";
+                 Text = "by discord username: uzimarcuzz";
+                 Icon = "";
+                 Duration = 1;})
+ 
+_G.Reach = 0
+_G.ReachOff = false -- Set this to true if you want to disable the reach lol
+ 
+game:GetService"RunService".Stepped:Connect(function()
+    if _G.ReachOff then return end
+    pcall(function()
+      Sword = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle
+        for i,v in pairs(game.Players:GetPlayers()) do 
+            if v ~= game.Players.LocalPlayer and v.Character:FindFirstChild("Left Arm") then
+             if (game.Players.LocalPlayer.Character.Torso.Position - v.Character.Torso.Position).Magnitude <= _G.Reach then
+                   v.Character['Left Leg']:BreakJoints()
+                   v.Character['Left Leg'].Transparency = 0
+                   v.Character['Left Leg'].CanCollide = false
+                   v.Character['Left Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Leg']:BreakJoints()
+                   v.Character['Right Leg'].Transparency = 0
+                   v.Character['Right Leg'].CanCollide = false
+                   v.Character['Right Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Left Arm']:BreakJoints()
+                   v.Character['Left Arm'].Transparency = 0
+                   v.Character['Left Arm'].CanCollide = false
+                   v.Character['Left Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Arm']:BreakJoints()
+                   v.Character['Right Arm'].Transparency = 0
+                   v.Character['Right Arm'].CanCollide = false
+                   v.Character['Right Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+               end
+           end
+       end
+    end)
+end)
+ 
+local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindHigher then
+                 _G.Reach = _G.Reach + 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "redefined";
+                 Text = "cbring increased to " .. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+ 
+ 
+     local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindLower then
+                 _G.Reach = _G.Reach - 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "sword/sahand";
+                 Text = "cbring decreased to ".. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+   end,
+})
+ 
+local Button = MainTab:CreateButton({
+   Name = "Tanks/Taking less damage (0 to toggle)",
+   Callback = function()
+        local players = game:GetService("Players")
+    local run = game:GetService("RunService")
+    local uis = game:GetService("UserInputService")
+ 
+    local SendNotification = function(Ti,Te)
+        game:GetService("StarterGui"):SetCore('SendNotification', {Title = tostring(Ti), Text = tostring(Te)})
+    end
+ 
+    local toggle = true
+ 
+    uis.InputBegan:Connect(function(i, gpe)
+        if not gpe and i.KeyCode == Enum.KeyCode.Zero then
+            toggle = not toggle
+            if toggle then
+                SendNotification("Cheats", "True")
+            else
+                SendNotification("Cheats", "False")
+            end
+        end
+    end)
+ 
+    while run.Stepped:Wait() do
+        if toggle then
+            pcall(function()
+                for i, v in next, players.LocalPlayer.Character:GetChildren() do
+                    if players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+                        if v:IsA("Part") then
+                            v.CanTouch = false
+                        end
+                    else
+                        if v:IsA("Part") then
+                            v.CanTouch = true
+                        end
+                    end
+                end
+            end)
+        else
+            pcall(function()
+                for i, v in next, players.LocalPlayer.Character:GetChildren() do
+                    if v:IsA("Part") then
+                        v.CanTouch = true
+                    end
+                end
+            end)
+        end
+    end
+   end,
+})
