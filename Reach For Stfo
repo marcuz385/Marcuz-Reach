@@ -367,3 +367,438 @@ local Button = MainTab:CreateButton({
     end
    end,
 })
+
+local Button = MainTab:CreateButton({
+   Name = "Best Legit Reach (j to make the reach higher, k to make the reach lower, (e to toggle off and on)",
+   Callback = function()
+        local StarterGui = game:GetService("StarterGui")
+
+function SendNotification(Ti,Te)
+    StarterGui:SetCore('SendNotification', {Title = tostring(Ti), Text = tostring(Te)})
+end
+
+if _G.TOPFRAGWARE then
+    SendNotification("TOPFRAGWARE", "Ready to TOPFRAG?")
+    return
+else
+    _G.TOPFRAGWARE = true
+    if WelcomeMessage then
+        SendNotification("TOPFRAGWARE", "Welcome")
+    end
+end
+
+getgenv().Configuration = {
+    ["Reach"] = true,
+    ["Distance"] = 10,
+    ["Increment"] = 1,
+    ["Decrement"] = 1
+}
+
+getgenv().Options = {
+    ["Auto Clicker"] = false,
+    ["Emulate Touched"] = false,
+    ["Notifications"] = true
+}
+
+getgenv().Keybinds = {
+    ["Toggle Reach"] = "E",
+    ["Toggle AC"] = "Q",
+    ["Increase Reach"] = "J",
+    ["Decrease Reach"] = "K",
+    ["Kill Script"] = "Z",
+    ["Notifications Toggle"] = "N"
+}
+
+local RandomPart = Instance.new("Part")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local Mouse = Player:GetMouse()
+
+local Active = true
+
+local IllegalHits = {}
+local WhitelistedCharacters = {}
+local WhitelistedLimbs = {}
+local SynapseInstances = {}
+local HandleInfo = {}
+local Hooked = {}
+local Connections = {}
+local ConnectionsToReset = {
+    "GripChanged",
+    "HumanoidDied"
+}
+
+local Limbs = {
+    ["Head"] = Vector3.new(2, 1, 1),
+    ["Torso"] = Vector3.new(2, 2, 1),
+    ["Left Arm"] = Vector3.new(1, 2, 1),
+    ["Right Arm"] = Vector3.new(1, 2, 1),
+    ["Left Leg"] = Vector3.new(1, 2, 1),
+    ["Right Leg"] = Vector3.new(1, 2, 1),
+    ["HumanoidRootPart"] = Vector3.new(2, 2, 1)
+}
+
+local KeyDownConnection = Mouse.KeyDown:Connect(function(key)
+    if key == string.lower(getgenv().Keybinds["Toggle Reach"]) then
+        getgenv().Configuration["Reach"] = not getgenv().Configuration["Reach"]
+        if getgenv().Options["Notifications"] == true then
+            SendNotification("TOPFRAGWARE","Reach = "..tostring(getgenv().Configuration["Reach"]))
+        end
+    elseif key == string.lower(getgenv().Keybinds["Toggle AC"]) then
+        getgenv().Options["Auto Clicker"] = not getgenv().Options["Auto Clicker"]
+        if getgenv().Options["Notifications"] == true then
+            SendNotification("TOPFRAGWARE","Auto Clicker = "..tostring(getgenv().Options["Auto Clicker"]))
+        end
+    elseif key == string.lower(getgenv().Keybinds["Increase Reach"]) then
+        getgenv().Configuration["Distance"] = getgenv().Configuration["Distance"] + getgenv().Configuration["Increment"]
+        if getgenv().Options["Notifications"] == true then
+            SendNotification("TOPFRAGWARE","Distance = "..math.floor(getgenv().Configuration["Distance"] * 10) / 10)
+        end
+    elseif key == string.lower(getgenv().Keybinds["Decrease Reach"]) then
+        getgenv().Configuration["Distance"] = getgenv().Configuration["Distance"] - getgenv().Configuration["Decrement"]
+        if getgenv().Options["Notifications"] == true then
+            SendNotification("TOPFRAGWARE","Distance = "..math.floor(getgenv().Configuration["Distance"] * 10) / 10)
+        end
+    elseif key == string.lower(getgenv().Keybinds["Notifications Toggle"]) then
+        getgenv().Options["Notifications"] = not getgenv().Options["Notifications"]
+        SendNotification("TOPFRAGWARE","Notifications = "..tostring(getgenv().Options["Notifications"]))
+    elseif key == string.lower(getgenv().Keybinds["Kill Script"]) then
+        for _, Connection in pairs(Connections) do
+            Connection:Disconnect()
+        end
+        Active = false
+        _G.TOPFRAGWARE = false
+    end
+end)
+
+Connections["KeyDown"] = KeyDownConnection
+
+function ParseString(Property, ...)
+	for n = 1, 24 do
+		if table.find(..., string.lower(Property:sub(1,n))) then
+			return Property:sub(1,n)
+		end
+	end
+	return false
+end
+
+local NamecallHook;
+
+NamecallHook = hookmetamethod(game, "__namecall", function(Self, ...)
+	if not checkcaller() then
+        if ParseString(getnamecallmethod(), {"gettouchingparts"}) then
+            local GTP = Self.GetTouchingParts(Self)
+            for i, Part in pairs(IllegalHits) do
+                table.remove(IllegalHits, i)
+                if not table.find(GTP, Part) then
+                    table.insert(GTP, Part)
+                end
+            end
+            return GTP
+        end
+	end
+	return NamecallHook(Self, ...)
+end)
+
+function HookConnection(Connection, Index, New_Function)
+    if type(Index) == 'number' then
+        local OldCon = getconnections(Connection)[Index]
+        if OldCon then
+            getconnections(Connection)[Index]:Disable()
+            Connection:Connect(New_Function)
+            return OldCon.Function
+        end
+    end
+    return false
+end
+
+function HookTouchEvents(Object, Events)
+    if Hooked[Object] then return end
+    Hooked[Object] = true
+    local c = {}
+    for _, Event in pairs(Events) do
+        for i, Connection in pairs(getconnections(Event)) do
+            table.insert(c, Connection)
+            local Hooked
+            Hooked = HookConnection(Event, i, function(Hit)
+                return
+            end)
+        end
+    end
+    local SignalFired = {}
+    local FireConnections = function(Hit)
+        HandleInfo[Object].Hit = 0
+        for _, Connection in pairs(c) do
+            Connection:Fire(Hit)
+        end
+    end
+    Object.Touched:Connect(function(Hit)
+        if not Active then
+            FireConnections(Hit) return
+        end
+        if not table.find(WhitelistedLimbs, Hit) then
+            FireConnections(Hit) return
+        end
+        HandleInfo[Object].Hit = HandleInfo[Object].Hit + 1
+        local TouchingParts = Object:GetTouchingParts()
+        if table.find(TouchingParts, Hit) then
+            FireConnections(Hit) return
+        end
+        if HandleInfo[Object].Hit > 5 then
+            FireConnections(Hit) return
+        end
+    end)
+end
+
+function FindHandles(Handle)
+    local Handles = {}
+    
+    for i,v in pairs(Handle:GetConnectedParts()) do
+        if not table.find(SynapseInstances, v) then
+            local Humanoid = v.Parent:FindFirstChild("Humanoid")
+            if Humanoid then
+                if Humanoid:GetLimb(v) == Enum.Limb.Unknown then
+                    table.insert(Handles, v)
+                end
+            else
+                table.insert(Handles, v)
+            end
+        end
+    end
+    
+    return Handles
+end
+
+function WhitelistLimbs(...)
+    local Result = {}
+    
+    for _, Limb in pairs(...) do
+        for _, ConnectedLimb in pairs(Limb:GetConnectedParts()) do
+            if ConnectedLimb:IsA("BasePart") then
+                table.insert(Result, ConnectedLimb)
+            end
+        end
+        table.insert(Result, Limb)
+    end
+    
+    WhitelistedLimbs = Result
+end
+
+function WhitelistCharacters(...)
+    local Result = {}
+    local TotalWhitelistedLimbs = {}
+    
+    local VerifyCharacter = function(Char)
+        return (Players:GetPlayerFromCharacter(Char))
+    end
+    
+    local VerifySize = function(Vector)
+        return (Vector.X <= 1/100 and Vector.Y <= 1/100 and Vector.Z <= 1/100)
+    end
+    
+    for _,v in pairs(...) do
+        local Humanoid = v:FindFirstChild("Humanoid")
+        if Humanoid and v ~= Player.Character and Humanoid:GetState() ~= Enum.HumanoidStateType.Dead and VerifyCharacter(v) then
+            local CurrentWhitelistedLimbs = {}
+            
+            for _, Part in pairs(v:GetChildren()) do
+                if Limbs[Part.Name] and VerifySize(Part.Size - Limbs[Part.Name]) then
+                    table.insert(CurrentWhitelistedLimbs, Part)
+                end
+            end
+            
+            if #CurrentWhitelistedLimbs > 6 then
+                for _, Limb in pairs(CurrentWhitelistedLimbs) do
+                    table.insert(TotalWhitelistedLimbs, Limb)
+                end
+                table.insert(Result, v)
+            end
+        end
+    end
+    WhitelistLimbs(TotalWhitelistedLimbs)
+    WhitelistedCharacters = Result
+end
+
+function EmulateTouch(RealHandle, Handles)
+    local Distance = getgenv().Configuration["Distance"]
+    local ScaleX, ScaleY, ScaleZ = (Distance / RealHandle.Size.X), (Distance / RealHandle.Size.Y), (Distance / RealHandle.Size.Z)
+    
+    for _, Handle in pairs(Handles) do
+        local Region = Region3.new(Handle.Position - Vector3.new((Handle.Size.X * ScaleX), (Handle.Size.Y * ScaleY), (Handle.Size.Z * ScaleZ)), Handle.Position + Vector3.new((Handle.Size.X * ScaleX), (Handle.Size.Y * ScaleY), (Handle.Size.Z * ScaleZ)))
+        local InRegion = game:GetService("Workspace"):FindPartsInRegion3(Region)
+        
+        if not HandleInfo[Handle] then
+            HandleInfo[Handle] = {}
+            HandleInfo[Handle].Touching = {}
+            HandleInfo[Handle].Hit = 0
+        end
+        
+        for _, Touching in pairs(HandleInfo[Handle].Touching) do
+            if not table.find(InRegion, Touching) then
+                table.remove(HandleInfo[Handle].Touching, _)
+            end
+        end
+        
+        for _, Part in pairs(InRegion) do
+            if not table.find(HandleInfo[Handle].Touching, Part) and table.find(WhitelistedLimbs, Part) then
+                table.insert(HandleInfo[Handle].Touching, Part) table.insert(IllegalHits, Part)
+                firetouchinterest(Handle, Part, 0)
+                firetouchinterest(Handle, Part, 1)
+		firetouchinterest(Handle, Part, 0)
+                firetouchinterest(Handle, Part, 1)
+            end
+        end
+    end
+end
+
+function FTI(RealHandle, Handles)
+    local Distance = getgenv().Configuration["Distance"]
+    local ScaleX, ScaleY, ScaleZ = (Distance / RealHandle.Size.X), (Distance / RealHandle.Size.Y), (Distance / RealHandle.Size.Z)
+    
+    for _, Handle in pairs(Handles) do
+        local Region = Region3.new(Handle.Position - Vector3.new((Handle.Size.X * ScaleX), (Handle.Size.Y * ScaleY), (Handle.Size.Z * ScaleZ)), Handle.Position + Vector3.new((Handle.Size.X * ScaleX), (Handle.Size.Y * ScaleY), (Handle.Size.Z * ScaleZ)))
+        local InRegion = game:GetService("Workspace"):FindPartsInRegion3(Region)
+        for _, Part in pairs(InRegion) do
+            if table.find(WhitelistedLimbs, Part) then table.insert(IllegalHits, Part)
+                firetouchinterest(Handle, Part, 0)
+                firetouchinterest(Handle, Part, 1)
+		firetouchinterest(Handle, Part, 0)
+                firetouchinterest(Handle, Part, 1)
+            end
+        end
+    end
+end
+
+function ClearTouchingInfo(Tool)
+    local RealHandle = Tool:FindFirstChild("Handle")
+    if RealHandle then
+        for _, Handle in pairs(FindHandles(RealHandle)) do 
+            if HandleInfo[Handle].Touching then
+                table.clear(HandleInfo[Handle].Touching)
+            end
+        end
+    end
+end
+
+function ResetConnections()
+    for Name, Connection in pairs(Connections) do
+        if table.find(ConnectionsToReset, Name) then
+            Connection:Disconnect()
+            Connections[Name] = nil
+        end
+    end
+end
+
+local CharacterAddedConnection = Player.CharacterAdded:Connect(function()
+    ResetConnections()
+end)
+
+Connections["CharacterAdded"] = CharacterAddedConnection
+
+coroutine.wrap(function()
+    while Active do
+        WhitelistCharacters(workspace:GetDescendants())
+        wait(1)
+    end
+end)()
+
+local RenderSteppedConnection = RunService.RenderStepped:Connect(function()
+    if not getgenv().Configuration["Reach"] or not Active then return end
+    local Tool = Player.Character:FindFirstChildOfClass("Tool")
+    if Tool then
+        if not Connections["GripChanged"] then
+            local GripChangedConnection = Tool.Changed:Connect(function(Property)
+                if Property == "Grip" then
+                    ClearTouchingInfo(Tool)
+                end
+            end)
+            Connections["GripChanged"] = GripChangedConnection
+        end
+        if getgenv().Options["Auto Clicker"] and Player.Character.Humanoid and Player.Character.Humanoid.Health > 0 then Tool:Activate() Tool:Activate() end
+        local Handle = Tool:FindFirstChild("Handle")
+        if Handle then
+            local Handles = FindHandles(Handle)
+            for _,v in pairs(Handles) do
+                HookTouchEvents(v, {v.Touched, v.TouchEnded, v.LocalSimulationTouched, v.StoppedTouching})
+            end
+            if getgenv().Options["Emulate Touched"] then
+                EmulateTouch(Handle, Handles)
+            else
+                FTI(Handle, Handles)
+            end
+        end
+    end
+end)
+
+Connections["RenderStepped"] = RenderSteppedConnection
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Best Legit Reach Off",
+   Callback = function()
+                     game.StarterGui:SetCore("SendNotification", {
+                 Title = "Reach off";
+                 Text = "by discord username: uzimarcuzz";
+                 Icon = "";
+                 Duration = 1;})
+ 
+_G.Reach = 0
+_G.ReachOff = false -- Set this to true if you want to disable the reach lol
+ 
+game:GetService"RunService".Stepped:Connect(function()
+    if _G.ReachOff then return end
+    pcall(function()
+      Sword = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle
+        for i,v in pairs(game.Players:GetPlayers()) do 
+            if v ~= game.Players.LocalPlayer and v.Character:FindFirstChild("Left Arm") then
+             if (game.Players.LocalPlayer.Character.Torso.Position - v.Character.Torso.Position).Magnitude <= _G.Reach then
+                   v.Character['Left Leg']:BreakJoints()
+                   v.Character['Left Leg'].Transparency = 0
+                   v.Character['Left Leg'].CanCollide = false
+                   v.Character['Left Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Leg']:BreakJoints()
+                   v.Character['Right Leg'].Transparency = 0
+                   v.Character['Right Leg'].CanCollide = false
+                   v.Character['Right Leg'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Left Arm']:BreakJoints()
+                   v.Character['Left Arm'].Transparency = 0
+                   v.Character['Left Arm'].CanCollide = false
+                   v.Character['Left Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+                   v.Character['Right Arm']:BreakJoints()
+                   v.Character['Right Arm'].Transparency = 0
+                   v.Character['Right Arm'].CanCollide = false
+                   v.Character['Right Arm'].CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(1,0,-3.5)
+               end
+           end
+       end
+    end)
+end)
+ 
+local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindHigher then
+                 _G.Reach = _G.Reach + 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "redefined";
+                 Text = "cbring increased to " .. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+ 
+ 
+     local Mouse = game.Players.LocalPlayer:GetMouse()
+    Mouse.KeyDown:Connect(function(key)
+        if key == _G.KeyBindLower then
+                 _G.Reach = _G.Reach - 1 
+                 game.StarterGui:SetCore("SendNotification", {
+                 Title = "sword/sahand";
+                 Text = "cbring decreased to ".. _G.Reach;
+                 Icon = "";
+                 Duration = 1;})
+             end
+          end)
+   end,
+})
